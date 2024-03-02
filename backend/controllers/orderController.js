@@ -37,7 +37,7 @@ exports.newOrder = async (req, res, next) => {
 exports.getSingleOrder = async (req, res, next) => {
     const order = await Order.findById(req.params.id).populate('user', 'name email');
 
-    if(!order){
+    if (!order) {
         return res.status(404).json({
             success: false,
             message: 'Order Not Found with this Id',
@@ -53,7 +53,7 @@ exports.getSingleOrder = async (req, res, next) => {
 
 // Get logged in user orders => /api/v1/orders/me
 exports.myOrders = async (req, res, next) => {
-    const orders = await Order.find({user: req.user._id});
+    const orders = await Order.find({ user: req.user._id });
 
     res.status(200).json({
         success: true,
@@ -83,7 +83,7 @@ exports.getAllOrders = async (req, res, next) => {
 exports.updateOrder = async (req, res, next) => {
     const order = await Order.findById(req.params.id);
 
-    if(!order){
+    if (!order) {
         return res.status(404).json({
             success: false,
             message: 'Order Not Found with this Id',
@@ -91,7 +91,7 @@ exports.updateOrder = async (req, res, next) => {
         // return next(new ErrorHandler("Order not found with this Id", 404));
     }
 
-    if(order.orderStatus === 'Delivered'){
+    if (order.orderStatus === 'Delivered') {
         return res.status(400).json({
             success: false,
             message: 'You have already delivered this order'
@@ -103,13 +103,13 @@ exports.updateOrder = async (req, res, next) => {
     });
 
     order.orderStatus = req.body.status,
-    order.deliveredAt = Date.now();
+        order.deliveredAt = Date.now();
 
-    if(req.body.status === 'Delivered'){
+    if (req.body.status === 'Delivered') {
         order.deliveredAt = Date.now();
     }
 
-    await order.save({validateBeforeSave: false});
+    await order.save({ validateBeforeSave: false });
 
     res.status(200).json({
         success: true,
@@ -117,19 +117,19 @@ exports.updateOrder = async (req, res, next) => {
     })
 }
 
-async function updateStock(id, quantity){
+async function updateStock(id, quantity) {
     const product = await Product.findById(id);
 
     product.stock = product.stock - quantity;
 
-    await product.save({validateBeforeSave: false});
+    await product.save({ validateBeforeSave: false });
 }
 
 // Delete Order - ADMIN => /api/v1/admin/order/:id
 exports.deleteOrder = async (req, res, next) => {
     const order = await Order.findById(req.params.id);
 
-    if(!order){
+    if (!order) {
         return res.status(404).json({
             success: false,
             message: 'Order Not Found with this Id',
